@@ -6,6 +6,7 @@ import com.nose.model.Order;
 import com.nose.model.User;
 import com.nose.orm.mapping.Entity;
 import org.hamcrest.BaseMatcher;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Before;
@@ -70,9 +71,9 @@ public class PropertyTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertThat(userEntity.getProperty("id").getType(), is(equalTo(Long.class)));
-        assertThat(userEntity.getProperty("address").getType(), is(equalTo(Address.class)));
-        assertThat(userEntity.getProperty("orders").getType(), is(equalTo(Order.class)));
+        assertThat(userEntity.getProperty("id").getType(), CoreMatchers.<Class>equalTo(Long.class));
+        assertThat(userEntity.getProperty("address").getType(), CoreMatchers.<Class>equalTo(Address.class));
+        assertThat(userEntity.getProperty("orders").getType(), CoreMatchers.<Class>equalTo(Order.class));
     }
 
     @Test
@@ -110,7 +111,7 @@ public class PropertyTest {
      * @param name
      * @return
      */
-    public static Matcher<Property> hasPropertyName(String name) {
+    public static Matcher<Property> hasPropertyName(final String name) {
         return new BaseMatcher<Property>() {
             @Override
             public boolean matches(final Object item) {
@@ -130,7 +131,7 @@ public class PropertyTest {
      * @param name
      * @return
      */
-    public static Matcher<Property> hasTableName(String name) {
+    public static Matcher<Property> hasTableName(final String name) {
         return new BaseMatcher<Property>() {
             @Override
             public boolean matches(final Object item) {
@@ -150,7 +151,7 @@ public class PropertyTest {
      * @param name
      * @return
      */
-    public static Matcher<Property> hasColumnName(String name) {
+    public static Matcher<Property> hasColumnName(final String name) {
         return new BaseMatcher<Property>() {
             @Override
             public boolean matches(final Object item) {

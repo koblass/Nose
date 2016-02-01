@@ -29,7 +29,7 @@ public class Property {
     protected boolean isTranscient = false;
     protected boolean isList;
     protected Class type;
-    protected List<Join> joins = new ArrayList<>();
+    protected List<Join> joins = new ArrayList<Join>();
 
     public Property(Entity entity, Field field) throws IllegalAccessException, InstantiationException {
         this.entity = entity;

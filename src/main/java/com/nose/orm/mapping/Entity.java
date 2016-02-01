@@ -43,14 +43,14 @@ public class Entity {
     /**
      * The properties
      */
-    protected Map<String, Property> properties = new HashMap<>();
+    protected Map<String, Property> properties = new HashMap<String, Property>();
 
 
 
     /**
      * The list of mapping object instances
      */
-    protected static Map<Class, Entity> instances = new HashMap<>();
+    protected static Map<Class, Entity> instances = new HashMap<Class, Entity>();
 
 
 
@@ -79,7 +79,7 @@ public class Entity {
         }
         this.adapter = entityAnnotation.adapter().newInstance();
 
-        ArrayList<Property> primaryProperties = new ArrayList<>();
+        ArrayList<Property> primaryProperties = new ArrayList<Property>();
         for (final java.lang.reflect.Field field : cls.getDeclaredFields()) {
             if (field.getAnnotation(Id.class) != null) {
                 primaryProperties.add(new Property(this, field));

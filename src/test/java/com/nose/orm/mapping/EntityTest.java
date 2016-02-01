@@ -2,6 +2,7 @@ package com.nose.orm.mapping;
 
 import com.nose.model.Address;
 import com.nose.model.User;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +42,7 @@ public class EntityTest {
 
     @Test
     public void testGetCls() throws Exception {
-        assertThat(userEntity.getCls(), is(equalTo(User.class)));
+        assertThat(userEntity.getCls(), CoreMatchers.<Class>equalTo(User.class));
     }
 
     @Test
