@@ -69,6 +69,9 @@ public class Property {
         if (field.isAnnotationPresent(com.nose.orm.mapping.annotation.Join.class)) {
             this.joins.add(Join.create(field.getAnnotation(com.nose.orm.mapping.annotation.Join.class)));
         }
+        if (field.isAnnotationPresent(com.nose.orm.mapping.annotation.JoinTable.class)) {
+            this.joins.add(Join.create(field.getAnnotation(com.nose.orm.mapping.annotation.JoinTable.class)));
+        }
     }
 
     /**

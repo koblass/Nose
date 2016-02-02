@@ -6,11 +6,24 @@ package com.nose.orm.mapping.entity;
  */
 public class JoinValue extends Join {
 
+    protected String targetTable;
+
+    protected String targetColumn;
+
     protected String value;
 
     protected JoinValue(String targetTable, String targetColumn, String value) {
-        super(targetTable, targetColumn);
+        this.targetTable = targetTable;
+        this.targetColumn = targetColumn;
         this.value = value;
+    }
+
+    public String getTargetTable() {
+        return targetTable;
+    }
+
+    public String getTargetColumn() {
+        return targetColumn;
     }
 
     public String getValue() {

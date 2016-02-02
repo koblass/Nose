@@ -114,25 +114,6 @@ public class Entity {
     }
 
 
-
-    /**
-     * Return the public method in this object
-     */
-    public Collection<Method> getPublicMethods() {
-        return Arrays.asList(cls.getMethods());
-    }
-
-
-
-    /**
-     * Return true if the class contain the requested method declared as public
-     */
-    public boolean hasPublicMethod(String methodName) {
-        return getPublicMethods().contains(methodName);
-    }
-
-
-
     /**
      * Return the properties present in this object
      */

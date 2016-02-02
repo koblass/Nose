@@ -4,15 +4,14 @@ package com.nose.orm.mapping.entity;
 import com.nose.model.Address;
 import com.nose.model.Order;
 import com.nose.model.User;
+import com.nose.orm.adapter.Default;
 import com.nose.orm.mapping.Entity;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
+import org.hamcrest.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.not;
@@ -61,6 +60,10 @@ public class PropertyTest {
         assertThat(userEntity.getProperty("lastName"), is(not(transcient())));
         assertThat(userEntity.getProperty("lastAccessDate"), is(transcient()));
     }
+    @Test
+    public void testGetAdapter() throws Exception {
+        MatcherAssert.assertThat(userEntity.getProperty("lastName").getAdapter(), instanceOf(Default.class));
+    }
 
     @Test
     public void testIsEntity() throws Exception {
@@ -85,22 +88,41 @@ public class PropertyTest {
 
     @Test
     public void testGetJoins() {
+        JoinColumn firstJoinColumn, secondJoinColumn;
+        // The column join is tested
         Property addressProperty = userEntity.getProperty("address");
         assertThat(addressProperty.getJoins().size(), is(equalTo(1)));
         assertThat(((JoinColumn)addressProperty.getJoins().get(0)).getSourceColumn(), is(equalTo("address_id")));
-        assertThat(addressProperty.getJoins().get(0).getTargetTable(), is(equalTo("address")));
-        assertThat(addressProperty.getJoins().get(0).getTargetColumn(), is(equalTo("id")));
+        assertThat(((JoinColumn)addressProperty.getJoins().get(0)).getTargetTable(), is(equalTo("address")));
+        assertThat(((JoinColumn)addressProperty.getJoins().get(0)).getTargetColumn(), is(equalTo("id")));
 
+        // The table join is tested
+        Property rolesProperty = userEntity.getProperty("roles");
+        assertThat(rolesProperty.getJoins().size(), is(equalTo(1)));
+        JoinTable joinTable = (JoinTable)rolesProperty.getJoins().get(0);
+        assertThat(joinTable.getTableName(), is(equalTo("user_role")));
+        assertThat(joinTable.getJoins().size(), is(equalTo(1)));
+        firstJoinColumn = (JoinColumn)joinTable.getJoins().get(0);
+        assertThat(firstJoinColumn.getTargetTable(), is(equalTo("user_role")));
+        assertThat(firstJoinColumn.getTargetColumn(), is(equalTo("user_id")));
+        assertThat(firstJoinColumn.getSourceColumn(), is(equalTo("id")));
+        assertThat(joinTable.getInverseJoins().size(), is(equalTo(1)));
+        secondJoinColumn = (JoinColumn)joinTable.getInverseJoins().get(0);
+        assertThat(secondJoinColumn.getTargetTable(), is(equalTo("role")));
+        assertThat(secondJoinColumn.getTargetColumn(), is(equalTo("id")));
+        assertThat(secondJoinColumn.getSourceColumn(), is(equalTo("role_id")));
+
+        // The combination of column and value joins is tested
         Property countryProperty = addressEntity.getProperty("country");
         assertThat(countryProperty.getJoins().size(), is(equalTo(2)));
-        JoinColumn firstJoin = (JoinColumn)countryProperty.getJoins().get(0);
-        assertThat(firstJoin.getTargetTable(), is(equalTo("country")));
-        assertThat(firstJoin.getTargetColumn(), is(equalTo("code")));
-        assertThat(firstJoin.getSourceColumn(), is(equalTo("country_code")));
-        JoinValue secondJoin = (JoinValue)countryProperty.getJoins().get(1);
-        assertThat(secondJoin.getTargetTable(), is(equalTo("country")));
-        assertThat(secondJoin.getTargetColumn(), is(equalTo("language")));
-        assertThat(secondJoin.getValue(), is(equalTo("fr_CH")));
+        firstJoinColumn = (JoinColumn)countryProperty.getJoins().get(0);
+        assertThat(firstJoinColumn.getTargetTable(), is(equalTo("country")));
+        assertThat(firstJoinColumn.getTargetColumn(), is(equalTo("code")));
+        assertThat(firstJoinColumn.getSourceColumn(), is(equalTo("country_code")));
+        JoinValue joinValue = (JoinValue)countryProperty.getJoins().get(1);
+        assertThat(joinValue.getTargetTable(), is(equalTo("country")));
+        assertThat(joinValue.getTargetColumn(), is(equalTo("language")));
+        assertThat(joinValue.getValue(), is(equalTo("fr_CH")));
     }
 
 
@@ -183,4 +205,5 @@ public class PropertyTest {
             }
         };
     }
+
 }

@@ -2,6 +2,7 @@ package com.nose.orm.mapping;
 
 import com.nose.model.Address;
 import com.nose.model.User;
+import com.nose.orm.adapter.Default;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,17 +54,7 @@ public class EntityTest {
 
     @Test
     public void testGetAdapter() throws Exception {
-
-    }
-
-    @Test
-    public void testGetPublicMethods() throws Exception {
-
-    }
-
-    @Test
-    public void testHasPublicMethod() throws Exception {
-
+        assertThat(userEntity.getAdapter(), instanceOf(Default.class));
     }
 
     @Test
