@@ -19,7 +19,7 @@ public class Address {
     @Column(table = "country", name = "name")
     @Joins({
         @Join(sourceColumn = "country_code", targetTable = "country", targetColumn = "code"),
-        @Join(targetTable = "country", targetColumn = "language", value = "fr_CH")
+        @Join(targetTable = "country", targetColumn = "language", value = "fr")
     })
     private String country;
 }

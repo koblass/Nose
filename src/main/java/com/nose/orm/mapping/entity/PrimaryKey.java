@@ -1,4 +1,5 @@
 package com.nose.orm.mapping.entity;
+
 import java.util.Arrays;
 import java.util.Collection;
 

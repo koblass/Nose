@@ -7,8 +7,7 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
-import static com.nose.orm.mapping.entity.PropertyTest.*;
-import static com.nose.orm.mapping.entity.PropertyTest.hasPropertyName;
+import static com.nose.utils.hamcrest.property.Matchers.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
@@ -65,10 +64,10 @@ public class EntityTest {
                 hasPropertyName("firstName"),
                 hasPropertyName("lastName"),
                 hasPropertyName("birthDate"),
-                hasPropertyName("age"),
+                hasPropertyName("lastModificationDate"),
                 hasPropertyName("address"),
                 hasPropertyName("orders"),
-                hasPropertyName("lastAccessDate"),
+                hasPropertyName("lastAccess"),
                 hasPropertyName("roles")
         ));
     }
@@ -76,7 +75,7 @@ public class EntityTest {
     @Test
     public void testHasProperty() throws Exception {
         assertThat(userEntity.hasProperty("id"), is(true));
-        assertThat(userEntity.hasProperty("age"), is(true));
+        assertThat(userEntity.hasProperty("lastName"), is(true));
         assertThat(userEntity.hasProperty("nonExistingProperty"), is(false));
     }
 

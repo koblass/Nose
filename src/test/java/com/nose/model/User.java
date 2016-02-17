@@ -3,6 +3,7 @@ package com.nose.model;
 import com.nose.orm.mapping.annotation.*;
 import lombok.Data;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
@@ -17,10 +18,20 @@ public class User {
     private Long id;
     private String firstName;
     private String lastName;
-    private Long age;
+
+    @Transcient
+    private Date lastModificationDate;
+
+    public int getAge() {
+        Calendar today = Calendar.getInstance();
+        Calendar birthDate = Calendar.getInstance();
+
+        birthDate.setTime(this.birthDate);
+        return today.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR) - (today.get(Calendar.MONTH) - birthDate.get(Calendar.MONTH) < 0 ? 1 : 0);
+    }
 
     @Column(name = "birth")
-    private String birthDate;
+    private Date birthDate;
 
     @Join(sourceColumn = "address_id", targetTable = "address", targetColumn = "id")
     private Address address;
@@ -28,8 +39,9 @@ public class User {
     @Join(sourceColumn = "id", targetTable = "order", targetColumn = "user_id")
     private Collection<Order> orders;
 
-    @Transcient
-    private Date lastAccessDate;
+    @Join(sourceColumn = "id", targetTable = "user_access", targetColumn = "user_id")
+    @Column(table = "user_access")
+    private Collection<Date> lastAccess;
 
     @JoinTable(
             name = "user_role",

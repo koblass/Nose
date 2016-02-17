@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <user id="1" last_name="Kobler" first_name="Daniel" age="37" birth="1978-08-22" address_id="1"/>
+
+    <user_access user_id="1" last_access="2016-01-01T20:00:00.000Z"/>
+    <user_access user_id="1" last_access="2016-01-12T10:00:00.000Z"/>
+
+    <address id="1" street="Street 1" zip="123" city="Geneva" country_code="CH"/>
+
+    <country code="CH" language="fr" name="Suisse"/>
+    <country code="CH" language="en" name="Switzerland"/>
+
+</dataset>

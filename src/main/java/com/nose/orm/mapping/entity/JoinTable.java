@@ -8,20 +8,20 @@ import java.util.List;
  */
 public class JoinTable extends Join {
     
-    protected String tableName;
+    protected String table;
 
     protected List<Join> joins;
     
     protected List<Join> inverseJoins;
 
-    protected JoinTable(String tableName, List<Join> joins, List<Join> inverseJoins) {
-        this.tableName = tableName;
+    protected JoinTable(String table, List<Join> joins, List<Join> inverseJoins) {
+        this.table = table;
         this.joins = joins;
         this.inverseJoins = inverseJoins;
     }
 
-    public String getTableName() {
-        return tableName;
+    public String getTable() {
+        return table;
     }
 
     public List<Join> getJoins() {

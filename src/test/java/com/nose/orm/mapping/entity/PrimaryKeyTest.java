@@ -20,12 +20,12 @@ public class PrimaryKeyTest {
     @Test
     public void testPrimaryKey() throws IllegalAccessException, InstantiationException {
         Entity userEntity = Entity.factory(User.class);
-        final PrimaryKey primaryKey = new PrimaryKey(userEntity.getProperty("id"), userEntity.getProperty("age"));
+        final PrimaryKey primaryKey = new PrimaryKey(userEntity.getProperty("id"), userEntity.getProperty("lastName"));
         assertThat(primaryKey.getProperties().size(), is(equalTo(2)));
-        assertThat(primaryKey.getProperties(), containsInAnyOrder(userEntity.getProperty("id"), userEntity.getProperty("age")));
+        assertThat(primaryKey.getProperties(), containsInAnyOrder(userEntity.getProperty("id"), userEntity.getProperty("lastName")));
 
         assertThat(primaryKey.getProperty("id"), is(equalTo(userEntity.getProperty("id"))));
-        assertThat(primaryKey.getProperty("age"), is(equalTo(userEntity.getProperty("age"))));
+        assertThat(primaryKey.getProperty("lastName"), is(equalTo(userEntity.getProperty("lastName"))));
         assertThat(primaryKey.getProperty("nonExtistingProperty"), is(nullValue()));
     }
 

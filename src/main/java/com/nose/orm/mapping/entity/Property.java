@@ -1,12 +1,14 @@
 package com.nose.orm.mapping.entity;
 
-import com.nose.orm.adapter.IAdapter;
-import com.nose.orm.mapping.Entity;
 import com.google.common.base.CaseFormat;
 import com.nose.orm.adapter.Default;
+import com.nose.orm.adapter.IAdapter;
+import com.nose.orm.database.Row;
+import com.nose.orm.mapping.Entity;
 import com.nose.orm.mapping.annotation.Column;
 import com.nose.orm.mapping.annotation.Joins;
 import com.nose.orm.mapping.annotation.Transcient;
+import org.apache.commons.lang.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -30,13 +32,13 @@ public class Property {
     protected boolean isList;
     protected Class type;
     protected List<Join> joins = new ArrayList<Join>();
+    protected List<Order> orders = new ArrayList<Order>();
 
     public Property(Entity entity, Field field) throws IllegalAccessException, InstantiationException {
         this.entity = entity;
         this.field = field;
 
         isTranscient = field.isAnnotationPresent(Transcient.class);
-        isEntity = field.getType().isAnnotationPresent(com.nose.orm.mapping.annotation.Entity.class);
         isList = field.getType().isArray() || Collection.class.isAssignableFrom(field.getType());
         Type type = field.getGenericType();
         if (type instanceof ParameterizedType) {
@@ -44,7 +46,8 @@ public class Property {
         } else {
             this.type = field.getType();
         }
-        if (field.isAnnotationPresent(Column.class)) {
+        isEntity = this.type.isAnnotationPresent(com.nose.orm.mapping.annotation.Entity.class);
+        if (field.isAnnotationPresent(Column.class) && StringUtils.isNotEmpty(field.getAnnotation(Column.class).name())) {
             columnName = field.getAnnotation(Column.class).name();
         } else {
             columnName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
@@ -128,6 +131,7 @@ public class Property {
 
     /**
      * Return the adapter used to retrieve and store the data of this property
+     *
      * @return
      */
     public IAdapter getAdapter() {
@@ -136,10 +140,54 @@ public class Property {
 
     /**
      * Return the list of joins
+     *
      * @return
      */
     public List<Join> getJoins() {
         return joins;
+    }
+
+    /**
+     * Return the list of orders
+     *
+     * @return
+     */
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+
+    /**
+     * Creates a unique key used to store the raw data in a tree structure in order to speed up the data browsing
+     */
+    public String getConditionUniqueLocalKeyValue(Row row) {
+        StringBuilder key = new StringBuilder();
+        for (Join join : joins) {
+            if (join instanceof JoinColumn && row.containsKey(((JoinColumn) join).getSourceColumn())) {
+                key.append(row.get(((JoinColumn) join).getSourceColumn()));
+            } else if (join instanceof JoinValue) {
+                key.append(((JoinValue) join).getValue());
+            }
+            key.append("_");
+        }
+        return key.toString();
+    }
+
+
+    /**
+     * Creates a unique key used to store the raw data in a tree structure in order to speed up the data browsing
+     */
+    public String getConditionUniqueForeignKeyValue(Row row) {
+        StringBuilder key = new StringBuilder();
+        for (Join join : joins) {
+            if (join instanceof JoinColumn && row.containsKey(((JoinColumn) join).getTargetColumn())) {
+                key.append(row.get(((JoinColumn) join).getTargetColumn()));
+            } else if (join instanceof JoinValue) {
+                key.append(((JoinValue) join).getValue());
+            }
+            key.append("_");
+        }
+        return key.toString();
     }
 
 }
