@@ -224,7 +224,7 @@ public class EntitySet<T> {
                 }
                 columns.add(((JoinColumn) join).getTargetColumn());
                 values.addAll(keys.get(((JoinColumn) join).getSourceColumn()));
-                whereConditions.add(((JoinColumn) join).getTargetColumn() + " in (" + String.join(",", Collections.nCopies(keys.get(((JoinColumn) join).getSourceColumn()).size(), "?")) + ")");
+                whereConditions.add(((JoinColumn) join).getTargetColumn() + " in (" + StringUtils.join(Collections.nCopies(keys.get(((JoinColumn) join).getSourceColumn()).size(), "?"), ",") + ")");
             } else if (join instanceof JoinValue) {
                 values.add(((JoinValue) join).getValue());
                 whereConditions.add(((JoinValue) join).getTargetColumn() + " = ?");
@@ -235,7 +235,7 @@ public class EntitySet<T> {
             return null;
         }
         select.append("select ");
-        select.append(String.join(",", columns));
+        select.append(StringUtils.join(columns, ","));
         select.append(" from ");
         select.append(property.getTableName());
         if (whereConditions.size() > 0) {
