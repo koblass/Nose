@@ -14,7 +14,7 @@ import static org.hamcrest.junit.MatcherAssert.assertThat;
  * Test the primary key class
  * Created by Daniel on 28.01.2016.
  */
-public class PrimaryKeyTest {
+public class PrimaryKeysTest {
 
 
     @Test

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * The joins
- * This annotation represents a list of orders
+ * This annotation represents a list of invoices
  * Created by Daniel on 31.01.2016
  */
 @Target({ElementType.FIELD})

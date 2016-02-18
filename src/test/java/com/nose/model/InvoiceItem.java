@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Entity
 @Data
-public class OrderItem {
+public class InvoiceItem {
 
     private Long id;
 

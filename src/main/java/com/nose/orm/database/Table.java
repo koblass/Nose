@@ -16,20 +16,20 @@ public class Table extends ArrayList<Row> {
     /**
      * Convert a flat rows table into a key/values associative table
      */
-    public Keys getKeyValues() {
-        Keys keys = new Keys();
+    public ColumnValues getKeyValues() {
+        ColumnValues columnValues = new ColumnValues();
         if (!isEmpty()) {
             for (Row row : this) {
                 for (Map.Entry<String, String> entry : row.entrySet()) {
-                    if (!keys.containsKey(entry.getKey())) {
-                        keys.put(entry.getKey(), new ArrayList<String>());
+                    if (!columnValues.containsKey(entry.getKey())) {
+                        columnValues.put(entry.getKey(), new ArrayList<String>());
                     }
-                    if (!keys.get(entry.getKey()).contains(entry.getValue())) {
-                        keys.get(entry.getKey()).add(entry.getValue());
+                    if (!columnValues.get(entry.getKey()).contains(entry.getValue())) {
+                        columnValues.get(entry.getKey()).add(entry.getValue());
                     }
                 }
             }
         }
-        return keys;
+        return columnValues;
     }
 }

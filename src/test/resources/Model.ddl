@@ -15,8 +15,8 @@ create table user_access (
   PRIMARY KEY (user_id, last_access)
 );
 
-drop table address if exists;
-create table address (
+drop table personal_address if exists;
+create table personal_address (
   id int not null primary key,
   street varchar(250) not null,
   zip  varchar(10) not null,
@@ -30,4 +30,21 @@ create table country (
   language varchar(5) not null,
   name varchar(50) not null,
   PRIMARY KEY (code, language)
+);
+
+drop table invoice if exists;
+create table invoice (
+  id int not null primary key,
+  user_id int not null,
+  date varchar(200) not null
+);
+
+drop table invoice_item if exists;
+create table invoice_item (
+  id int not null primary key,
+  invoice_id int not null,
+  quantity int not null,
+  name varchar(50) not null,
+  description varchar(250) not null,
+  price DECIMAL not null
 );

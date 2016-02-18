@@ -2,7 +2,7 @@ package com.nose.orm.mapping.entity;
 
 
 import com.nose.model.Address;
-import com.nose.model.Order;
+import com.nose.model.Invoice;
 import com.nose.model.User;
 import com.nose.orm.adapter.Default;
 import com.nose.orm.mapping.Entity;
@@ -74,21 +74,21 @@ public class PropertyTest {
     public void testIsEntity() throws Exception {
         assertThat(userEntity.getProperty("id").isEntity(), is(false));
         assertThat(userEntity.getProperty("address").isEntity(), is(true));
-        assertThat(userEntity.getProperty("orders").isEntity(), is(true));
+        assertThat(userEntity.getProperty("invoices").isEntity(), is(true));
     }
 
     @Test
     public void testGetType() throws Exception {
         assertThat(userEntity.getProperty("id").getType(), CoreMatchers.<Class>equalTo(Long.class));
         assertThat(userEntity.getProperty("address").getType(), CoreMatchers.<Class>equalTo(Address.class));
-        assertThat(userEntity.getProperty("orders").getType(), CoreMatchers.<Class>equalTo(Order.class));
+        assertThat(userEntity.getProperty("invoices").getType(), CoreMatchers.<Class>equalTo(Invoice.class));
         assertThat(userEntity.getProperty("lastAccess").getType(), CoreMatchers.<Class>equalTo(Date.class));
     }
 
     @Test
     public void testIsList() {
         assertThat(userEntity.getProperty("id").isList(), is(false));
-        assertThat(userEntity.getProperty("orders").isList(), is(true));
+        assertThat(userEntity.getProperty("invoices").isList(), is(true));
         assertThat(userEntity.getProperty("roles").isList(), is(true));
     }
 

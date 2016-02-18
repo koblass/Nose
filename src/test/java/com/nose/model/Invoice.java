@@ -12,12 +12,12 @@ import java.util.Date;
  */
 @Entity
 @Data
-public class Order {
+public class Invoice {
 
     private Long id;
 
     private Date date;
 
-    @Join(sourceColumn = "id", targetTable = "order_item", targetColumn = "order_id")
-    private Collection<OrderItem> items;
+    @Join(sourceColumn = "id", targetTable = "invoice_item", targetColumn = "invoice_id")
+    private Collection<InvoiceItem> items;
 }

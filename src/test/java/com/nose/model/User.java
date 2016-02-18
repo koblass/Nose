@@ -36,8 +36,8 @@ public class User {
     @Join(sourceColumn = "address_id", targetTable = "address", targetColumn = "id")
     private Address address;
 
-    @Join(sourceColumn = "id", targetTable = "order", targetColumn = "user_id")
-    private Collection<Order> orders;
+    @Join(sourceColumn = "id", targetTable = "invoice", targetColumn = "user_id")
+    private Collection<Invoice> invoices;
 
     @Join(sourceColumn = "id", targetTable = "user_access", targetColumn = "user_id")
     @Column(table = "user_access")

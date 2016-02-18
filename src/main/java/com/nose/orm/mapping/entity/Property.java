@@ -148,7 +148,7 @@ public class Property {
     }
 
     /**
-     * Return the list of orders
+     * Return the list of invoices
      *
      * @return
      */

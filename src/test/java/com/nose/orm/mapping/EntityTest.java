@@ -66,7 +66,7 @@ public class EntityTest {
                 hasPropertyName("birthDate"),
                 hasPropertyName("lastModificationDate"),
                 hasPropertyName("address"),
-                hasPropertyName("orders"),
+                hasPropertyName("invoices"),
                 hasPropertyName("lastAccess"),
                 hasPropertyName("roles")
         ));
