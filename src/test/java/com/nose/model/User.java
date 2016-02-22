@@ -1,6 +1,7 @@
 package com.nose.model;
 
 import com.nose.orm.mapping.annotation.*;
+import com.nose.orm.mapping.entity.Direction;
 import lombok.Data;
 
 import java.util.Calendar;
@@ -37,6 +38,7 @@ public class User {
     private Address address;
 
     @Join(sourceColumn = "id", targetTable = "invoice", targetColumn = "user_id")
+    @Order(column = "date", direction = Direction.DESC)
     private Collection<Invoice> invoices;
 
     @Join(sourceColumn = "id", targetTable = "user_access", targetColumn = "user_id")

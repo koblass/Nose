@@ -7,6 +7,7 @@ import com.nose.orm.database.Row;
 import com.nose.orm.mapping.Entity;
 import com.nose.orm.mapping.annotation.Column;
 import com.nose.orm.mapping.annotation.Joins;
+import com.nose.orm.mapping.annotation.Orders;
 import com.nose.orm.mapping.annotation.Transcient;
 import org.apache.commons.lang.StringUtils;
 
@@ -65,15 +66,19 @@ public class Property {
             adapter = new Default();
         }
         if (field.isAnnotationPresent(Joins.class)) {
-            for (com.nose.orm.mapping.annotation.Join joinAnnotation : field.getAnnotation(Joins.class).value()) {
-                this.joins.add(Join.create(joinAnnotation));
-            }
+            this.joins.addAll(Join.create(field.getAnnotation(Joins.class).value()));
         }
         if (field.isAnnotationPresent(com.nose.orm.mapping.annotation.Join.class)) {
             this.joins.add(Join.create(field.getAnnotation(com.nose.orm.mapping.annotation.Join.class)));
         }
         if (field.isAnnotationPresent(com.nose.orm.mapping.annotation.JoinTable.class)) {
             this.joins.add(Join.create(field.getAnnotation(com.nose.orm.mapping.annotation.JoinTable.class)));
+        }
+        if (field.isAnnotationPresent(Orders.class)) {
+            this.orders.addAll(Order.create(field.getAnnotation(Orders.class).value()));
+        }
+        if (field.isAnnotationPresent(com.nose.orm.mapping.annotation.Order.class)) {
+            this.orders.add(Order.create(field.getAnnotation(com.nose.orm.mapping.annotation.Order.class)));
         }
     }
 

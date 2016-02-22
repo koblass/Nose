@@ -15,7 +15,7 @@ public abstract class Join {
      * @return
      */
     public static List<Join> create(com.nose.orm.mapping.annotation.Join[] joinAnnotations) {
-        List joins = new ArrayList(joinAnnotations.length);
+        List<Join> joins = new ArrayList<Join>(joinAnnotations.length);
         for (com.nose.orm.mapping.annotation.Join joinAnnotation : joinAnnotations) {
             joins.add(Join.create(joinAnnotation));
         }
