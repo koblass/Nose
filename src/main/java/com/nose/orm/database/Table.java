@@ -1,6 +1,7 @@
 package com.nose.orm.database;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -9,24 +10,19 @@ import java.util.Map;
 public class Table extends ArrayList<Row> {
 
 
-
-
-
-
     /**
      * Convert a flat rows table into a key/values associative table
+     * The key is the column name and the values represent the row values
      */
-    public ColumnValues getKeyValues() {
+    public ColumnValues getColumnValues() {
         ColumnValues columnValues = new ColumnValues();
         if (!isEmpty()) {
             for (Row row : this) {
                 for (Map.Entry<String, String> entry : row.entrySet()) {
                     if (!columnValues.containsKey(entry.getKey())) {
-                        columnValues.put(entry.getKey(), new ArrayList<String>());
+                        columnValues.put(entry.getKey(), new HashSet<String>());
                     }
-                    if (!columnValues.get(entry.getKey()).contains(entry.getValue())) {
-                        columnValues.get(entry.getKey()).add(entry.getValue());
-                    }
+                    columnValues.get(entry.getKey()).add(entry.getValue());
                 }
             }
         }

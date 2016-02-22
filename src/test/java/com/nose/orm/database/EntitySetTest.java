@@ -47,7 +47,7 @@ public class EntitySetTest extends DBUnitTest {
     }
 
     @Test
-    public void testGenerateTree() throws Exception {
+    public void testGenerateTreeForUsers() throws Exception {
         userEntitySet.populateFromSelect(getConnection().getConnection(), "select * from user");
 
         List<User> users = userEntitySet.generateTree();
@@ -68,7 +68,7 @@ public class EntitySetTest extends DBUnitTest {
 
 
     @Test
-    public void testGenerateTree2() throws Exception {
+    public void testGenerateTreeForAddresses() throws Exception {
         addressEntitySet.populateFromSelect(getConnection().getConnection(), "select * from personal_address");
 
         List<Address> addresses = addressEntitySet.generateTree();

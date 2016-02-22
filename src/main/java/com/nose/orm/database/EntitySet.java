@@ -1,5 +1,8 @@
 package com.nose.orm.database;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -10,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,11 +34,6 @@ public class EntitySet<T> {
     private Map<String, EntitySet> propertiesEntity;
 
 
-    public static EntitySet create(Class entityClass) throws InstantiationException, IllegalAccessException {
-        return new EntitySet(entityClass);
-    }
-
-
     private EntitySet(Class<T> entityClass) throws IllegalAccessException, InstantiationException {
         this.entityClass = entityClass;
         this.entityMapping = Entity.factory(entityClass);
@@ -46,15 +43,71 @@ public class EntitySet<T> {
         propertiesEntity = new HashMap<String, EntitySet>();
     }
 
+    public static EntitySet create(Class entityClass) throws InstantiationException, IllegalAccessException {
+        return new EntitySet(entityClass);
+    }
+
+    /**
+     * Creates the query used to populate the entity and all its simple type 1:1 relations
+     *
+     * @param entity
+     * @return
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    public static String createEntityPopulationQuery(Entity entity, Set<String> additionalColumns) throws IllegalAccessException, InstantiationException {
+        Set<String> columns = new LinkedHashSet<String>();
+        if (CollectionUtils.isNotEmpty(additionalColumns)) {
+            columns.addAll(additionalColumns);
+        }
+
+        for (Property property : entity.getProperties()) {
+            if (property.getJoins().isEmpty()) {
+                // This is not a remote property
+                columns.add(property.getColumnName());
+            } else {
+                // This is a remote property
+                for (Join join : property.getJoins()) {
+                    if (join instanceof JoinColumn) {
+                        columns.add(((JoinColumn) join).getSourceColumn());
+                    }
+                }
+            }
+        }
+        if (columns.isEmpty()) {
+            return null;
+        }
+        return new StringBuilder()
+                .append("select ")
+                .append(StringUtils.join(columns, ","))
+                .append(" from ")
+                .append(entity.getTableName())
+                .toString();
+    }
 
     public List<T> generateTree() throws IOException, IllegalAccessException, NoSuchFieldException {
-        return generateTree(new Keys());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        List<T> entities = new ArrayList<T>();
+
+        // Generate the json tree
+        ArrayNode jsonObjectsList = generateJsonTree(new Keys());
+
+        // Convert to POJO
+        for (JsonNode jsonNode : jsonObjectsList) {
+            // The entity is created and added to the list
+            T entity = mapper.readValue(jsonNode.toString(), entityClass);
+            entities.add(entity);
+        }
+
+        return entities;
     }
 
 
-    protected List<T> generateTree(Keys keys) throws IOException, IllegalAccessException, NoSuchFieldException {
+    protected ArrayNode generateJsonTree(Keys keys) throws IOException, IllegalAccessException, NoSuchFieldException {
         ObjectMapper mapper = new ObjectMapper();
-        List<T> entities = new ArrayList<T>();
+        ArrayNode entities = mapper.createArrayNode();
 
         if (!this.dbData.isEmpty()) {
             for (Row row : this.dbData) {
@@ -89,10 +142,6 @@ public class EntitySet<T> {
                         }
                     }
 
-                    // The entity is created and added to the list
-                    T entity = mapper.readValue(objectNode.toString(), entityClass);
-                    entities.add(entity);
-
                     // Populate the 1:1 and 1:n complex type properties
                     for (Map.Entry<String, EntitySet> entry : propertiesEntity.entrySet()) {
                         Property property = entityMapping.getProperty(entry.getKey());
@@ -104,22 +153,21 @@ public class EntitySet<T> {
                         }
 
                         // Set the field value
-                        Field field = entityClass.getDeclaredField(property.getName());
-                        field.setAccessible(true);
-                        List propertyValues = entry.getValue().generateTree(propertyKeys);
+                        ArrayNode propertyValues = entry.getValue().generateJsonTree(propertyKeys);
                         if (property.isList()) {
-                            field.set(entity, propertyValues);
-                        } else if (!propertyValues.isEmpty()){
-                            field.set(entity, propertyValues.get(0));
+                            objectNode.replace(property.getName(), propertyValues);
+                        } else if (propertyValues.size() != 0) {
+                            objectNode.replace(property.getName(), propertyValues.get(0));
                         }
-                        field.setAccessible(false);
                     }
+
+                    // The entity is created and added to the list
+                    entities.add(objectNode);
                 }
             }
         }
         return entities;
     }
-
 
     /**
      * Populate the entityClass set from the given sql select query.
@@ -131,7 +179,6 @@ public class EntitySet<T> {
         populateFromSelect(dataSource.getConnection(), select);
     }
 
-
     /**
      * Populate the entityClass set from the given sql select query.
      *
@@ -142,8 +189,6 @@ public class EntitySet<T> {
         ResultSet resultSet = connection.createStatement().executeQuery(select);
         populateEntity(connection, resultSet);
     }
-
-
 
     protected void populateEntity(Connection connection, ResultSet resultSet) throws SQLException, InstantiationException, IllegalAccessException {
         int columnCount = resultSet.getMetaData().getColumnCount();
@@ -160,10 +205,10 @@ public class EntitySet<T> {
         populateProperties(connection);
     }
 
-
     /**
      * Populate the entity for the given property
      * Can not be used for simple type properties
+     *
      * @param connection
      * @param property
      * @param columnValues
@@ -179,15 +224,19 @@ public class EntitySet<T> {
         }
     }
 
-
     /**
      * Populates the properties
+     *
+     * @param connection
+     * @throws SQLException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
      */
     protected void populateProperties(Connection connection) throws SQLException, InstantiationException, IllegalAccessException {
         if (!dbData.isEmpty()) {
 
             // Get the data organised by column instead of row
-            ColumnValues columnValues = dbData.getKeyValues();
+            ColumnValues columnValues = dbData.getColumnValues();
 
             for (Property property : this.entityMapping.getProperties()) {
                 // The entity simple type properties are retrieved
@@ -232,7 +281,6 @@ public class EntitySet<T> {
         }
     }
 
-
     /**
      * Find the right row by the given primary keys.
      *
@@ -246,7 +294,6 @@ public class EntitySet<T> {
         }
         return null;
     }
-
 
     /**
      * Find the rows that matches the given keys.
@@ -269,7 +316,6 @@ public class EntitySet<T> {
         }
         return rows;
     }
-
 
     /**
      * Creates the query used to populate the 1:1 and 1:n simple type property
@@ -298,9 +344,9 @@ public class EntitySet<T> {
         return createPropertyPopulationQuery(select, connection, property, columnValues);
     }
 
-
     /**
      * Creates the query used to populate the 1:1 and 1:N complex type property
+     *
      * @param connection
      * @param property
      * @param columnValues
@@ -325,45 +371,6 @@ public class EntitySet<T> {
         select.append(createEntityPopulationQuery(entity, columns));
         return createPropertyPopulationQuery(select, connection, property, columnValues);
     }
-
-
-    /**
-     * Creates the query used to populate the entity and all its simple type 1:1 relations
-     * @param entity
-     * @return
-     * @throws IllegalAccessException
-     * @throws InstantiationException
-     */
-    public static String createEntityPopulationQuery(Entity entity, Set<String> additionalColumns) throws IllegalAccessException, InstantiationException {
-        Set<String> columns = new LinkedHashSet<String>();
-        if (CollectionUtils.isNotEmpty(additionalColumns)) {
-            columns.addAll(additionalColumns);
-        }
-
-        for (Property property : entity.getProperties()) {
-            if (property.getJoins().isEmpty()) {
-                // This is not a remote property
-                columns.add(property.getColumnName());
-            } else {
-                // This is a remote property
-                for (Join join : property.getJoins()) {
-                    if (join instanceof JoinColumn) {
-                        columns.add(((JoinColumn) join).getSourceColumn());
-                    }
-                }
-            }
-        }
-        if (columns.isEmpty()) {
-            return null;
-        }
-        return new StringBuilder()
-                .append("select ")
-                .append(StringUtils.join(columns, ","))
-                .append(" from ")
-                .append(entity.getTableName())
-                .toString();
-    }
-
 
     /**
      * Creates the query used to populate the 1:1 and 1:n simple type property
