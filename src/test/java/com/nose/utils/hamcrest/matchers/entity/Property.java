@@ -1,6 +1,5 @@
-package com.nose.utils.hamcrest.property;
+package com.nose.utils.hamcrest.matchers.entity;
 
-import com.nose.orm.mapping.entity.Property;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -8,7 +7,7 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * Created by Daniel on 16.02.2016.
  */
-public class Matchers {
+public class Property {
 
 
     /**
@@ -17,10 +16,10 @@ public class Matchers {
      * @param name
      * @return
      */
-    public static Matcher<Property> hasPropertyName(final String name) {
-        return new TypeSafeMatcher<Property>() {
+    public static Matcher<com.nose.orm.mapping.entity.Property> hasPropertyName(final String name) {
+        return new TypeSafeMatcher<com.nose.orm.mapping.entity.Property>() {
             @Override
-            public boolean matchesSafely(final Property property) {
+            public boolean matchesSafely(final com.nose.orm.mapping.entity.Property property) {
                 return property.getName().equals(name);
             }
 
@@ -37,10 +36,10 @@ public class Matchers {
      * @param name
      * @return
      */
-    public static Matcher<Property> hasTableName(final String name) {
-        return new TypeSafeMatcher<Property>() {
+    public static Matcher<com.nose.orm.mapping.entity.Property> hasTableName(final String name) {
+        return new TypeSafeMatcher<com.nose.orm.mapping.entity.Property>() {
             @Override
-            public boolean matchesSafely(final Property property) {
+            public boolean matchesSafely(final com.nose.orm.mapping.entity.Property property) {
                 return property.getTableName().equals(name);
             }
 
@@ -57,10 +56,10 @@ public class Matchers {
      * @param name
      * @return
      */
-    public static Matcher<Property> hasColumnName(final String name) {
-        return new TypeSafeMatcher<Property>() {
+    public static Matcher<com.nose.orm.mapping.entity.Property> hasColumnName(final String name) {
+        return new TypeSafeMatcher<com.nose.orm.mapping.entity.Property>() {
             @Override
-            public boolean matchesSafely(final Property property) {
+            public boolean matchesSafely(final com.nose.orm.mapping.entity.Property property) {
                 return property.getColumnName().equals(name);
             }
 
@@ -76,10 +75,10 @@ public class Matchers {
      *
      * @return
      */
-    public static Matcher<Property> transcient() {
-        return new TypeSafeMatcher<Property>() {
+    public static Matcher<com.nose.orm.mapping.entity.Property> transcient() {
+        return new TypeSafeMatcher<com.nose.orm.mapping.entity.Property>() {
             @Override
-            public boolean matchesSafely(final Property property) {
+            public boolean matchesSafely(final com.nose.orm.mapping.entity.Property property) {
                 return property.isTranscient();
             }
 

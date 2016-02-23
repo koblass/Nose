@@ -1,5 +1,7 @@
 package com.nose.orm.mapping.entity;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,7 @@ public abstract class Join {
      * @return
      */
     public static Join create(com.nose.orm.mapping.annotation.Join joinAnnotation) {
-        if (joinAnnotation.sourceColumn().isEmpty()) {
+        if (StringUtils.isEmpty(joinAnnotation.sourceColumn())) {
             return new JoinValue(joinAnnotation.targetTable(), joinAnnotation.targetColumn(), joinAnnotation.value());
         } else {
             return new JoinColumn(joinAnnotation.targetTable(), joinAnnotation.targetColumn(), joinAnnotation.sourceColumn());

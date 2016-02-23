@@ -13,8 +13,8 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static com.nose.utils.hamcrest.join.Matchers.*;
-import static com.nose.utils.hamcrest.property.Matchers.*;
+import static com.nose.utils.hamcrest.matchers.entity.Join.*;
+import static com.nose.utils.hamcrest.matchers.entity.Property.*;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.contains;

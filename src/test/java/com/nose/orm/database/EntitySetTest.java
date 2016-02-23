@@ -8,13 +8,14 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.TimeZone;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static com.nose.utils.hamcrest.matchers.model.Model.*;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -24,6 +25,9 @@ public class EntitySetTest extends DBUnitTest {
 
     private EntitySet<User> userEntitySet;
     private EntitySet<Address> addressEntitySet;
+
+
+    private static DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 
     public EntitySetTest(String name) throws Exception {
@@ -52,17 +56,21 @@ public class EntitySetTest extends DBUnitTest {
 
         List<User> users = userEntitySet.generateTree();
 
-        assertThat(users.size(), is(equalTo(1)));
-        User user = users.get(0);
-        assertThat(user.getId(), is(equalTo(1L)));
-        assertThat(user.getLastName(), is(equalTo("Kobler")));
-        assertThat(user.getFirstName(), is(equalTo("Daniel")));
-        assertThat(user.getAge(), is(equalTo(37)));
-        Calendar c1 = GregorianCalendar.getInstance();
-        c1.setTimeZone(TimeZone.getTimeZone("GMT"));
-        c1.set(1978, 7, 22, 0, 0, 0);  // August 22nd 1978
-        c1.set(Calendar.MILLISECOND, 0);
-        assertThat(user.getBirthDate(), equalTo(c1.getTime()));
+        assertThat(users, hasItem(
+                user(1l, "Kobler", "Daniel", format.parse("1978-08-22T00:00:00.000-0000"),
+                        address(1L, "Street 1", "123", "Geneva", "Suisse"),
+                        hasItems(
+                            invoice(2l, format.parse("2015-06-03T09:40:00.000-0000"), hasItems(
+                                    invoiceItem(3l, 1, new BigDecimal("10"), "Item 1", "Item 1 description"),
+                                    invoiceItem(4l, 2, new BigDecimal("20"), "Item 2", "Item 2 description"),
+                                    invoiceItem(5l, 3, new BigDecimal("30"), "Item 3", "Item 3 description")
+                            )),
+                            invoice(1l, format.parse("2015-01-01T10:00:00.000-0000"), hasItems(
+                                    invoiceItem(1l,  5, new BigDecimal("10"), "Item 1", "Item 1 description"),
+                                    invoiceItem(2l, 10, new BigDecimal("20"), "Item 2", "Item 2 description")
+                            ))
+                    )
+                )));
     }
 
 
@@ -73,13 +81,7 @@ public class EntitySetTest extends DBUnitTest {
 
         List<Address> addresses = addressEntitySet.generateTree();
 
-        assertThat(addresses.size(), is(equalTo(1)));
-        Address address = addresses.get(0);
-        assertThat(address.getId(), is(equalTo(1L)));
-        assertThat(address.getStreet(), is(equalTo("Street 1")));
-        assertThat(address.getZip(), is(equalTo("123")));
-        assertThat(address.getCity(), is(equalTo("Geneva")));
-        assertThat(address.getCountry(), is(equalTo("Suisse")));
+        assertThat(addresses, hasItem(address(1L, "Street 1", "123", "Geneva", "Suisse")));
     }
 
 }
