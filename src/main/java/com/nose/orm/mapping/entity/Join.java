@@ -36,13 +36,4 @@ public abstract class Join {
             return new JoinColumn(joinAnnotation.targetTable(), joinAnnotation.targetColumn(), joinAnnotation.sourceColumn());
         }
     }
-
-    /**
-     * Creates a join table from the given annotation
-     * @param joinTableAnnotation
-     * @return
-     */
-    public static Join create(com.nose.orm.mapping.annotation.JoinTable joinTableAnnotation) {
-        return new JoinTable(joinTableAnnotation.name(), Join.create(joinTableAnnotation.joins()), Join.create(joinTableAnnotation.inverseJoins()));
-    }
 }

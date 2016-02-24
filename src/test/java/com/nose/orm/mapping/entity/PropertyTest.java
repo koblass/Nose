@@ -100,7 +100,7 @@ public class PropertyTest {
 
         // The table join is tested
         Property rolesProperty = userEntity.getProperty("roles");
-        assertThat(rolesProperty.getJoins(), contains(
+        assertThat(rolesProperty.getJoinTable(), is(
                 joinTable("user_role",
                     contains(
                         joinColumn("id", "user_role", "user_id")

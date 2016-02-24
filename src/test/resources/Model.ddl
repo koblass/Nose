@@ -11,7 +11,7 @@ create table user (
 drop table user_access if exists;
 create table user_access (
   user_id int not null,
-  last_access varchar(200) not null,
+  last_access TIMESTAMP not null,
   PRIMARY KEY (user_id, last_access)
 );
 
@@ -36,7 +36,7 @@ drop table invoice if exists;
 create table invoice (
   id int not null primary key,
   user_id int not null,
-  date varchar(200) not null
+  date TIMESTAMP not null
 );
 
 drop table invoice_item if exists;

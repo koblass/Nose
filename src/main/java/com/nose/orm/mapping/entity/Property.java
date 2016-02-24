@@ -16,6 +16,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,6 +33,7 @@ public class Property {
     protected boolean isTranscient = false;
     protected boolean isList;
     protected Class type;
+    protected JoinTable joinTable = null;
     protected List<Join> joins = new ArrayList<Join>();
     protected List<Order> orders = new ArrayList<Order>();
 
@@ -44,6 +46,8 @@ public class Property {
         Type type = field.getGenericType();
         if (type instanceof ParameterizedType) {
             this.type = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
+        } else if (type instanceof Class && ((Class) type).isArray()) {
+            this.type = ((Class) type).getComponentType();
         } else {
             this.type = field.getType();
         }
@@ -72,7 +76,7 @@ public class Property {
             this.joins.add(Join.create(field.getAnnotation(com.nose.orm.mapping.annotation.Join.class)));
         }
         if (field.isAnnotationPresent(com.nose.orm.mapping.annotation.JoinTable.class)) {
-            this.joins.add(Join.create(field.getAnnotation(com.nose.orm.mapping.annotation.JoinTable.class)));
+            this.joinTable = JoinTable.create(field.getAnnotation(com.nose.orm.mapping.annotation.JoinTable.class));
         }
         if (field.isAnnotationPresent(Orders.class)) {
             this.orders.addAll(Order.create(field.getAnnotation(Orders.class).value()));
@@ -153,6 +157,14 @@ public class Property {
     }
 
     /**
+     * Return the join table
+     * @return
+     */
+    public JoinTable getJoinTable() {
+        return joinTable;
+    }
+
+    /**
      * Return the list of invoices
      *
      * @return
@@ -166,16 +178,15 @@ public class Property {
      * Creates a unique key used to store the raw data in a tree structure in order to speed up the data browsing
      */
     public String getConditionUniqueLocalKeyValue(Row row) {
-        StringBuilder key = new StringBuilder();
+        List<String> keys = new LinkedList<String>();
         for (Join join : joins) {
             if (join instanceof JoinColumn && row.containsKey(((JoinColumn) join).getSourceColumn())) {
-                key.append(row.get(((JoinColumn) join).getSourceColumn()));
+                keys.add(row.get(((JoinColumn) join).getSourceColumn()));
             } else if (join instanceof JoinValue) {
-                key.append(((JoinValue) join).getValue());
+                keys.add(((JoinValue) join).getValue());
             }
-            key.append("_");
         }
-        return key.toString();
+        return keys.toString();
     }
 
 
@@ -183,16 +194,14 @@ public class Property {
      * Creates a unique key used to store the raw data in a tree structure in order to speed up the data browsing
      */
     public String getConditionUniqueForeignKeyValue(Row row) {
-        StringBuilder key = new StringBuilder();
+        List<String> keys = new LinkedList<String>();
         for (Join join : joins) {
             if (join instanceof JoinColumn && row.containsKey(((JoinColumn) join).getTargetColumn())) {
-                key.append(row.get(((JoinColumn) join).getTargetColumn()));
+                keys.add(row.get(((JoinColumn) join).getTargetColumn()));
             } else if (join instanceof JoinValue) {
-                key.append(((JoinValue) join).getValue());
+                keys.add(((JoinValue) join).getValue());
             }
-            key.append("_");
         }
-        return key.toString();
+        return keys.toString();
     }
-
 }

@@ -6,6 +6,7 @@ import org.junit.Test;
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,6 +49,10 @@ public class RowTest {
         @Override
         public String getColumnName(int column) throws SQLException {
             return keys.get(column-1);
+        }
+        @Override
+        public int getColumnType(int column) throws SQLException {
+            return Types.VARCHAR;
         }
     }
 

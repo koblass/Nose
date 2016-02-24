@@ -191,14 +191,8 @@ public class EntitySet<T> {
     }
 
     protected void populateEntity(Connection connection, ResultSet resultSet) throws SQLException, InstantiationException, IllegalAccessException {
-        int columnCount = resultSet.getMetaData().getColumnCount();
-        int rowIndex;
         while (resultSet.next()) {
-            this.dbData.add(new Row());
-            rowIndex = this.dbData.size() - 1;
-            for (int i = 1; i <= columnCount; i++) {
-                this.dbData.get(rowIndex).put(resultSet.getMetaData().getColumnName(i).toLowerCase(), resultSet.getString(i));
-            }
+            this.dbData.add(Row.of(resultSet));
         }
         resultSet.close();
 
@@ -233,7 +227,7 @@ public class EntitySet<T> {
      * @throws IllegalAccessException
      */
     protected void populateProperties(Connection connection) throws SQLException, InstantiationException, IllegalAccessException {
-        if (!dbData.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(dbData)) {
 
             // Get the data organised by column instead of row
             ColumnValues columnValues = dbData.getColumnValues();
@@ -247,7 +241,7 @@ public class EntitySet<T> {
                         while (resultSet.next()) {
                             Row row = Row.of(resultSet);
                             String propertyKeys = property.getConditionUniqueForeignKeyValue(row);
-                            if (propertyKeys != null && !propertyKeys.isEmpty()) {
+                            if (StringUtils.isNotEmpty(propertyKeys)) {
                                 if (property.isList()) {
                                     // The entity simple type 1:n lists properties
                                     if (!propertiesSimpleTypeListDbData.containsKey(property.getName())) {
@@ -321,27 +315,21 @@ public class EntitySet<T> {
      * Creates the query used to populate the 1:1 and 1:n simple type property
      */
     protected PreparedStatement createSimpleTypePropertyPopulationQuery(Connection connection, Property property, ColumnValues columnValues) throws SQLException {
-        List<String> columns = new LinkedList<String>();
+        Set<String> columns = new LinkedHashSet<String>();
         StringBuilder select = new StringBuilder();
 
+        columns.add(property.getColumnName());
         for (Join join : property.getJoins()) {
             if (join instanceof JoinColumn && columnValues.containsKey(((JoinColumn) join).getSourceColumn())) {
-                if (!columns.contains(property.getColumnName())) {
-                    columns.add(property.getColumnName());
-                }
                 columns.add(((JoinColumn) join).getTargetColumn());
             }
-        }
-        // Todo: Fix this when implementing the joinTable pattern
-        if (columns.isEmpty()) {
-            return null;
         }
         select.append("select ");
         select.append(StringUtils.join(columns, ","));
         select.append(" from ");
         select.append(property.getTableName());
 
-        return createPropertyPopulationQuery(select, connection, property, columnValues);
+        return createPropertyPopulationPreparedStatement(select, connection, property, columnValues);
     }
 
     /**
@@ -369,13 +357,13 @@ public class EntitySet<T> {
         }
 
         select.append(createEntityPopulationQuery(entity, columns));
-        return createPropertyPopulationQuery(select, connection, property, columnValues);
+        return createPropertyPopulationPreparedStatement(select, connection, property, columnValues);
     }
 
     /**
      * Creates the query used to populate the 1:1 and 1:n simple type property
      */
-    protected PreparedStatement createPropertyPopulationQuery(StringBuilder select, Connection connection, Property property, ColumnValues columnValues) throws SQLException {
+    protected PreparedStatement createPropertyPopulationPreparedStatement(StringBuilder select, Connection connection, Property property, ColumnValues columnValues) throws SQLException {
         List<String> whereConditions = new LinkedList<String>();
         List<String> values = new LinkedList<String>();
 

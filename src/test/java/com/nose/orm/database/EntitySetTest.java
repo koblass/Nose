@@ -57,15 +57,15 @@ public class EntitySetTest extends DBUnitTest {
         List<User> users = userEntitySet.generateTree();
 
         assertThat(users, hasItem(
-                user(1l, "Kobler", "Daniel", format.parse("1978-08-22T00:00:00.000-0000"),
+                user(1l, "Kobler", "Daniel", format.parse("1978-08-22T00:00:00.000+0000"),
                         address(1L, "Street 1", "123", "Geneva", "Suisse"),
                         hasItems(
-                            invoice(2l, format.parse("2015-06-03T09:40:00.000-0000"), hasItems(
+                            invoice(2l, format.parse("2015-06-03T09:40:00.000+0000"), hasItems(
                                     invoiceItem(3l, 1, new BigDecimal("10"), "Item 1", "Item 1 description"),
                                     invoiceItem(4l, 2, new BigDecimal("20"), "Item 2", "Item 2 description"),
                                     invoiceItem(5l, 3, new BigDecimal("30"), "Item 3", "Item 3 description")
                             )),
-                            invoice(1l, format.parse("2015-01-01T10:00:00.000-0000"), hasItems(
+                            invoice(1l, format.parse("2015-01-01T10:00:00.000+0000"), hasItems(
                                     invoiceItem(1l,  5, new BigDecimal("10"), "Item 1", "Item 1 description"),
                                     invoiceItem(2l, 10, new BigDecimal("20"), "Item 2", "Item 2 description")
                             ))

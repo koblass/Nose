@@ -1,7 +1,6 @@
 package com.nose.utils.hamcrest.matchers.entity;
 
 import com.nose.orm.mapping.entity.JoinColumn;
-import com.nose.orm.mapping.entity.JoinTable;
 import com.nose.orm.mapping.entity.JoinValue;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -75,12 +74,11 @@ public class Join {
      * @param inverseJoinsMatcher
      * @return
      */
-    public static Matcher<com.nose.orm.mapping.entity.Join> joinTable(final String table, final Matcher<Iterable<? extends com.nose.orm.mapping.entity.Join>> joinsMatcher, final Matcher<Iterable<? extends com.nose.orm.mapping.entity.Join>> inverseJoinsMatcher) {
-        return new TypeSafeMatcher<com.nose.orm.mapping.entity.Join>() {
+    public static Matcher<com.nose.orm.mapping.entity.JoinTable> joinTable(final String table, final Matcher<Iterable<? extends com.nose.orm.mapping.entity.Join>> joinsMatcher, final Matcher<Iterable<? extends com.nose.orm.mapping.entity.Join>> inverseJoinsMatcher) {
+        return new TypeSafeMatcher<com.nose.orm.mapping.entity.JoinTable>() {
 
             @Override
-            public boolean matchesSafely(final com.nose.orm.mapping.entity.Join join) {
-                JoinTable joinTable = (JoinTable) join;
+            public boolean matchesSafely(final com.nose.orm.mapping.entity.JoinTable joinTable) {
                 return joinTable.getTable().equals(table) &&
                         joinsMatcher.matches(joinTable.getJoins()) &&
                         inverseJoinsMatcher.matches(joinTable.getInverseJoins());
