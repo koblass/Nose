@@ -38,11 +38,15 @@ public class User {
     private Address address;
 
     @Join(sourceColumn = "id", targetTable = "invoice", targetColumn = "user_id")
-    @Order(column = "date", direction = Direction.DESC)
+    @Orders({
+        @Order(column = "date", direction = Direction.DESC),
+        @Order(column = "id", direction = Direction.ASC)
+    })
     private Collection<Invoice> invoices;
 
     @Join(sourceColumn = "id", targetTable = "user_access", targetColumn = "user_id")
     @Column(table = "user_access")
+    @Order(column = "last_access", direction = Direction.DESC)
     private Collection<Date> lastAccess;
 
     @JoinTable(

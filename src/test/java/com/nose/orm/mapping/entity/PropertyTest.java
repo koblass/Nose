@@ -5,6 +5,7 @@ import com.nose.model.Address;
 import com.nose.model.Invoice;
 import com.nose.model.User;
 import com.nose.orm.adapter.Default;
+import com.nose.orm.database.Row;
 import com.nose.orm.mapping.Entity;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
@@ -14,10 +15,13 @@ import org.junit.Test;
 import java.util.Date;
 
 import static com.nose.utils.hamcrest.matchers.entity.Join.*;
+import static com.nose.utils.hamcrest.matchers.entity.Order.order;
 import static com.nose.utils.hamcrest.matchers.entity.Property.*;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 
@@ -120,4 +124,25 @@ public class PropertyTest {
         ));
     }
 
+    @Test
+    public void testGetOrders() {
+        assertThat(userEntity.getProperty("invoices").getOrders(), hasItems(order("date", Direction.DESC), order("id", Direction.ASC)));
+        assertThat(userEntity.getProperty("lastAccess").getOrders(), hasItems(order("last_access", Direction.DESC)));
+    }
+
+
+    @Test
+    public void testGetConditionUniqueLocalKeyValue() throws Exception {
+        Row row = new Row();
+        row.put("country_code", "CH");
+        assertThat(addressEntity.getProperty("country").getConditionUniqueLocalKeyValue(row), is(equalTo("[CH, fr]")));
+    }
+
+    @Test
+    public void getConditionUniqueForeignKeyValue() throws Exception {
+        Row row = new Row();
+        row.put("code", "CH");
+        row.put("language", "fr");
+        assertThat(addressEntity.getProperty("country").getConditionUniqueForeignKeyValue(row), is(equalTo("[CH, fr]")));
+    }
 }

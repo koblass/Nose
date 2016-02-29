@@ -74,9 +74,6 @@ public class EntitySet<T> {
                 }
             }
         }
-        if (columns.isEmpty()) {
-            return null;
-        }
         return new StringBuilder()
                 .append("select ")
                 .append(StringUtils.join(columns, ","))
@@ -109,7 +106,7 @@ public class EntitySet<T> {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode entities = mapper.createArrayNode();
 
-        if (!this.dbData.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(this.dbData)) {
             for (Row row : this.dbData) {
                 if (keys.matches(row)) {
 
@@ -391,6 +388,9 @@ public class EntitySet<T> {
                 select.append(order.getColumnName());
                 select.append(" ");
                 select.append(order.getDirection());
+                if (property.getOrders().indexOf(order) != property.getOrders().size() - 1) {
+                    select.append(", ");
+                }
             }
         }
 
