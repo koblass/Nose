@@ -36,6 +36,7 @@ drop table invoice if exists;
 create table invoice (
   id int not null primary key,
   user_id int not null,
+  status int default 0 not null,
   date TIMESTAMP not null
 );
 

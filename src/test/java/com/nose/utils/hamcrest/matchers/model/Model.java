@@ -1,9 +1,6 @@
 package com.nose.utils.hamcrest.matchers.model;
 
-import com.nose.model.Address;
-import com.nose.model.Invoice;
-import com.nose.model.InvoiceItem;
-import com.nose.model.User;
+import com.nose.model.*;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -20,7 +17,7 @@ public class Model {
     /**
      * Hamcrest matcher
      */
-    public static Matcher<User> user(final Long id, final String lastName, final String firstName, final Date birthDate, final Matcher<Address> addressMatchers, final Matcher<java.lang.Iterable<Invoice>> invoiceMatchers) {
+    public static Matcher<User> user(final Long id, final String lastName, final String firstName, final Date birthDate, final Matcher<? extends Address> addressMatchers, final Matcher<java.lang.Iterable<? extends Invoice>> invoiceMatchers) {
 
         return new TypeSafeMatcher<User>() {
             @Override
@@ -73,17 +70,17 @@ public class Model {
     /**
      * Hamcrest matcher
      */
-    public static Matcher<Invoice> invoice(final Long id, final Date date, final Matcher<java.lang.Iterable<InvoiceItem>> invoiceItemsMatchers) {
+    public static Matcher<Invoice> invoice(final Long id, final InvoiceStatus status, final Date date, final Matcher<java.lang.Iterable<? extends InvoiceItem>> invoiceItemsMatchers) {
 
         return new TypeSafeMatcher<Invoice>() {
             @Override
             public boolean matchesSafely(final Invoice model) {
-                return model.getId().equals(id) && model.getDate().equals(date) && invoiceItemsMatchers.matches(model.getItems());
+                return model.getId().equals(id) && model.getStatus().equals(status) && model.getDate().equals(date) && invoiceItemsMatchers.matches(model.getItems());
             }
 
             @Override
             public void describeTo(final Description description) {
-                description.appendText("id ").appendValue(id).appendText(" and date ").appendValue(date).appendText(" and items containing ").appendDescriptionOf(invoiceItemsMatchers);
+                description.appendText("id ").appendValue(id).appendText(" and status ").appendValue(status).appendText(" and date ").appendValue(date).appendText(" and items containing ").appendDescriptionOf(invoiceItemsMatchers);
             }
         };
     }

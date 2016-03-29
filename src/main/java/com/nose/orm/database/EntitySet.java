@@ -111,7 +111,7 @@ public class EntitySet<T> {
                 if (keys.matches(row)) {
 
                     // Populate the own properties
-                    ObjectNode objectNode = mapper.createObjectNode();
+                    ObjectNode objectNode = entities.addObject();
                     for (Map.Entry<String, String> entry : row.entrySet()) {
                         Property property = entityMapping.getPropertyFromColumnName(entry.getKey());
                         if (property != null) {
@@ -157,9 +157,6 @@ public class EntitySet<T> {
                             objectNode.replace(property.getName(), propertyValues.get(0));
                         }
                     }
-
-                    // The entity is created and added to the list
-                    entities.add(objectNode);
                 }
             }
         }
@@ -290,7 +287,6 @@ public class EntitySet<T> {
      * Find the rows that matches the given keys.
      *
      * @param keys The keys
-     * @return string[][]
      */
     protected List<Row> findRowByKeys(Keys keys) {
         List<Row> rows = new ArrayList<Row>();

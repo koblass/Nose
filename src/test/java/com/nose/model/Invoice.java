@@ -18,6 +18,8 @@ public class Invoice {
 
     private Date date;
 
+    private InvoiceStatus status;
+
     @Join(sourceColumn = "id", targetTable = "invoice_item", targetColumn = "invoice_id")
     private Collection<InvoiceItem> items;
 }
